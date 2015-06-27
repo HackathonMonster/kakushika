@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta property="og:type" content="<%- @og_type %>">
+  <meta property="og:site_name" content="<%- @og_sitename %>">
+  <meta property="og:url" content="<%- @og_url %>">
+  <meta property="og:title" content="<%- @og_title %>">
+  <meta property="og:image" content="<%- @og_image %>">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <% include 'style' %>
+  <title><%- @title %></title>
+</head>
+<body>
+  <% content %>
+  <% include 'script' %>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "name": "kakushika",
+  "version": "1.0.0",
+  "description": "kakushika shorten the chat",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:HackathonMonster/kakushika.git"
+  },
+  "author": "Orleika",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HackathonMonster/kakushika/issues"
+  },
+  "homepage": "https://github.com/HackathonMonster/kakushika#readme",
+  "dependencies": {
+    "async": "^1.2.1",
+    "body-parser": "^1.13.1",
+    "compression": "^1.5.0",
+    "cookie-parser": "^1.3.5",
+    "debug": "^2.2.0",
+    "ect": "^0.5.9",
+    "express": "^4.13.0",
+    "helmet": "^0.9.1",
+    "mecab-async": "^0.1.0",
+    "mongoose": "^4.0.6",
+    "morgan": "^1.6.0",
+    "request": "^2.58.0",
+    "serve-favicon": "^2.3.0",
+    "websocket": "^1.0.19"
+  }
+}

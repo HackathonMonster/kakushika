@@ -1,0 +1,6 @@
+{
+  "host": "kakukaku.cloudapp.net",
+  "mongodbUrl": "mongodb://localhost/kakukaku",
+  "title": "Kakushika",
+  "og_site": ""
+}
