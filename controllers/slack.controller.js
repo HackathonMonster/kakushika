@@ -25,7 +25,7 @@ var groupsList = 'https://slack.com/api/groups.list?exclude_archived=1&pretty=1'
 
 exports.lists = function(req, res, next) {
   var accessToken = req.headers.token;
-  
+
   if (!accessToken) {
     var error = new Error();
     error.status = 400;
@@ -123,7 +123,9 @@ exports.listen = function(req, res, next) {
               error.message = 'Bad Request';
               next(error);
             } else {
-              res.send('success');
+              res.json({
+                'ok': true
+              });
             }
           });
         });
@@ -168,7 +170,9 @@ exports.stop = function(req, res, next) {
                   error.message = 'Bad Request';
                   next(error);
                 } else {
-                  res.send('success');
+                  res.json({
+                    'ok': true
+                  });
                 }
               });
           });
