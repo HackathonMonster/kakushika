@@ -20,7 +20,7 @@ var getRequest = function(url, callback) {
 /**
  * show chat list
  */
-var channelsList = ' https://slack.com/api/channels.list?exclude_archived=1&pretty=1';
+var channelsList = 'https://slack.com/api/channels.list?exclude_archived=1&pretty=1';
 var groupsList = 'https://slack.com/api/groups.list?exclude_archived=1&pretty=1';
 
 exports.lists = function(req, res, next) {
