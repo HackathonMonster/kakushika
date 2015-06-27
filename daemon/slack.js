@@ -13,12 +13,11 @@ var http = require('http');
 var WebSocketClient = require('websocket').client;
 var client = new WebSocketClient();
 
-if (process.argv.length !== 4) {
+if (process.argv.length !== 3) {
   process.exit();
 }
 
-var id = process.argv[2];
-var accessToken = process.argv[3];
+var accessToken = process.argv[2];
 
 // mongoose connection
 var connect = function() {
@@ -56,8 +55,7 @@ var rtmStart = 'https://slack.com/api/rtm.start?pretty=1';
 var errorExit = function(error) {
   console.log('Connect Error: ' + error.toString());
   ExecModel.remove({
-    'channelId': id,
-    'accessToken': accessToken
+    accessToken: accessToken
   }, function(err) {
     process.exit();
   });
@@ -86,8 +84,44 @@ client.on('connect', function(connection) {
     if (message.type === 'utf8') {
       console.log("Received: '" + message.utf8Data + "'");
       var json = JSON.parse(message.utf8Data);
-      var chat = new ChatModel(json);
-      chat.save();
+      if (json.type === 'message') {
+        if (json.subtype !== 'pinned_item') {
+          var chat = new ChatModel(json);
+          chat.save();
+        }
+      } else if (json.type === 'pin_added') {
+        ChatModel.findOne({
+          ts: json.item.message.ts
+        }, function(err, data) {
+          if (data !== null) {
+            ChatModel.update({
+              ts: data.ts
+            }, {
+              $set: {
+                pin: true
+              }
+            }, function(err) {
+              console.log('error: update error');
+            });
+          }
+        });
+      } else if (json.type === 'pin_removed') {
+        ChatModel.findOne({
+          ts: json.item.message.ts
+        }, function(err, data) {
+          if (data !== null) {
+            ChatModel.update({
+              ts: data.ts
+            }, {
+              $set: {
+                pin: false
+              }
+            }, function(err) {
+              console.log('error: update error');
+            });
+          }
+        });
+      }
     }
   });
 });
@@ -113,7 +147,7 @@ async.waterfall([
           'id': member.id,
           'name': member.name,
           'real_name': member.real_name,
-          'image': member.image_72
+          'image': member.profile.image_72
         });
         memberModel.save(function() {
           if (idx === members.members.length) {

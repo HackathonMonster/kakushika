@@ -25,6 +25,7 @@ var groupsList = 'https://slack.com/api/groups.list?exclude_archived=1&pretty=1'
 
 exports.lists = function(req, res, next) {
   var accessToken = req.headers.token;
+  
   if (!accessToken) {
     var error = new Error();
     error.status = 400;
@@ -92,9 +93,8 @@ var execPath = './daemon/slack.js';
 
 exports.listen = function(req, res, next) {
   var accessToken = req.headers.token;
-  var channelId = req.headers.id;
 
-  if (!accessToken || !channelId) {
+  if (!accessToken) {
     var error = new Error();
     error.status = 400;
     error.message = 'Bad Request';
@@ -103,10 +103,7 @@ exports.listen = function(req, res, next) {
     var ExecModel = mongoose.model('Exec');
 
     ExecModel.find({
-      $and: [{
-        channelId: channelId,
-        accessToken: accessToken
-      }]
+      accessToken: accessToken
     }, function(err, data) {
       if (!data || data.length !== 0) {
         var error = new Error();
@@ -115,11 +112,10 @@ exports.listen = function(req, res, next) {
         next(error);
       } else {
         var execNew = new ExecModel({
-          'channelId': channelId,
           'accessToken': accessToken
         });
         execNew.save(function(err, data) {
-          var cmd = 'forever start --append --uid ' + data._id + ' ' + execPath + ' ' + channelId + ' ' + accessToken;
+          var cmd = 'forever start --append --uid ' + data._id + ' ' + execPath + ' ' + accessToken;
           exec(cmd, function(error, stdout, stderr) {
             if (error !== null) {
               error = new Error();
@@ -141,9 +137,8 @@ exports.listen = function(req, res, next) {
  */
 exports.stop = function(req, res, next) {
   var accessToken = req.headers.token;
-  var channelId = req.headers.id;
 
-  if (!accessToken || !channelId) {
+  if (!accessToken) {
     var error = new Error();
     error.status = 400;
     error.message = 'Bad Request';
@@ -152,10 +147,7 @@ exports.stop = function(req, res, next) {
     var ExecModel = mongoose.model('Exec');
 
     ExecModel.findOne({
-      $and: [{
-        channelId: channelId,
-        accessToken: accessToken
-      }]
+      accessToken: accessToken
     }, function(err, data) {
       if (!data || data.length === 0) {
         var error = new Error();
@@ -187,9 +179,8 @@ exports.stop = function(req, res, next) {
 
 exports.status = function(req, res, next) {
   var accessToken = req.headers.token;
-  var channelId = req.headers.id;
 
-  if (!accessToken || !channelId) {
+  if (!accessToken) {
     var error = new Error();
     error.status = 400;
     error.message = 'Bad Request';
@@ -198,10 +189,7 @@ exports.status = function(req, res, next) {
     var ExecModel = mongoose.model('Exec');
 
     ExecModel.findOne({
-      $and: [{
-        channelId: channelId,
-        accessToken: accessToken
-      }]
+      accessToken: accessToken
     }, function(err, data) {
       if (!data || data.length === 0) {
         res.json({
@@ -251,7 +239,7 @@ exports.members = function(req, res, next) {
               'id': member.id,
               'name': member.name,
               'real_name': member.real_name,
-              'image': member.image_72
+              'image': member.profile.image_72
             });
             memberModel.save(function(err) {
               if (idx === members.members.length) {

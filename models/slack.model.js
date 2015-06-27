@@ -8,10 +8,21 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var chatSchema = new Schema({
+  ts: {
+    type: String,
+    unique: true
+  },
   channel: String,
   user: String,
   text: String,
-  date: Date
+  date: {
+    type: Date,
+    default: Date.now
+  },
+  pin: {
+    type: Boolean,
+    default: false
+  }
 }, {
   collection: 'chatSlack'
 });
@@ -19,7 +30,6 @@ var chatSchema = new Schema({
 module.exports = mongoose.model('Chat', chatSchema);
 
 var execSchema = new Schema({
-  channelId: String,
   accessToken: String
 }, {
   collection: 'execSlack'
