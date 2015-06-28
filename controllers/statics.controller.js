@@ -5,6 +5,7 @@
  * Module dependencies.
  */
 var config = require('../config.json');
+var fs = require('fs');
 var async = require('async');
 var request = require('request');
 var mongoose = require('mongoose');
@@ -41,6 +42,8 @@ var getTommorow = function(today) {
 exports.make = function(req, res, next) {
   var accessToken = req.headers.token;
 
+
+  var ChatModel = mongoose.model('Chat');
   var error;
 
   if (!accessToken) {
@@ -49,16 +52,41 @@ exports.make = function(req, res, next) {
     error.message = 'Bad Request';
     next(error);
   } else {
-    var cmd;
-    exec(cmd, function(error, stdout, stderr) {
-      if (error !== null) {
-        error = new Error();
-        error.status = 400;
-        error.message = 'Bad Request';
+    ChatModel.find({
+      'date': {
+        '$gte': getToday().toUTCString(),
+        '$lt': getTommorow().toUTCString()
+      }
+    }, function(err, data) {
+      if (err || !data) {
+        var error = new Error();
+        error.status = 404;
+        error.message = 'Not Found';
         next(error);
       } else {
-        res.json({
-          'ok': true
+        var json = JSON.stringify(data);
+        fs.writeFile('./data/' + getToday().toISOString().substr(0, 10) + '.json', json, function(err) {
+          if (err) {
+            res.json({
+              'ok': false
+            });
+          } else {
+            var cmd = 'python ./daemon/markov.py';
+            exec(cmd, function(error, stdout, stderr) {
+              console.log(stdout);
+              console.log(error);
+              if (error !== null) {
+                error = new Error();
+                error.status = 400;
+                error.message = 'Bad Request';
+                next(error);
+              } else {
+                res.json({
+                  'ok': true
+                });
+              }
+            });
+          }
         });
       }
     });
