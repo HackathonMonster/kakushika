@@ -72,9 +72,11 @@ app.use(express.static(path.join(__dirname, 'public'), {
 var routes = {};
 routes.index = require('./routes/index');
 routes.slack = require('./routes/slack');
+routes.statics = require('./routes/statics');
 
 app.use('/', routes.index);
 app.use('/slack', routes.slack);
+app.use('/statics', routes.statics);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
