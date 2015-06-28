@@ -50,3 +50,13 @@ var memberSchema = new Schema({
 });
 
 module.exports = mongoose.model('Member', memberSchema);
+
+var summarySchema = new Schema({
+  date: Date,
+  channel: String,
+  text: String
+}, {
+  collection: 'summarySlack'
+});
+
+module.exports = mongoose.model('Summary', summarySchema);
