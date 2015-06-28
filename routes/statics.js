@@ -10,7 +10,7 @@ var express = require('express'),
 
 /* GET home page. */
 router.get('/make', statics.make);
-router.get('/summary/:channelId', statics.summary);
+router.get('/summary', statics.summary);
 router.get('/count/:channelId', statics.count);
 
 module.exports = router;
