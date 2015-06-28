@@ -42,7 +42,6 @@ var getTommorow = function(today) {
 exports.make = function(req, res, next) {
   var accessToken = req.headers.token;
 
-
   var ChatModel = mongoose.model('Chat');
   var error;
 
@@ -71,7 +70,7 @@ exports.make = function(req, res, next) {
               'ok': false
             });
           } else {
-            var cmd = 'python ./daemon/markov.py';
+            var cmd = 'python ./daemon/markov.py ' + accessToken;
             exec(cmd, function(error, stdout, stderr) {
               console.log(stdout);
               console.log(error);
@@ -95,20 +94,54 @@ exports.make = function(req, res, next) {
 
 exports.summary = function(req, res, next) {
   var accessToken = req.headers.token;
-  var channelId = req.params.channelId;
+  // var channelId = req.params.channelId;
   var searchDate = req.query.date;
 
-  var ChatModel = mongoose.model('Chat');
+  // var ChatModel = mongoose.model('Chat');
+  var SummaryModel = mongoose.model('Summary');
   var error;
 
-  if (!accessToken || !channelId) {
+  if (!accessToken) {
     error = new Error();
     error.status = 400;
     error.message = 'Bad Request';
     next(error);
   } else {
     if (!searchDate) {
-      ChatModel.find({
+      // ChatModel.find({
+      //   'date': {
+      //     '$gte': getToday().toUTCString(),
+      //     '$lt': getTommorow().toUTCString()
+      //   }
+      // }, function(err, data) {
+      //   if (err || !data) {
+      //     var error = new Error();
+      //     error.status = 404;
+      //     error.message = 'Not Found';
+      //     next(error);
+      //   } else {
+      //     var countData = [];
+      //     var flg = true;
+      //     for (var i = 0, l = data.length; i < l; i++) {
+      //       flg = true;
+      //       for (var ii = 0, ll = countData.length; ii < ll; ii++) {
+      //         if (data[i].user === countData[ii].user) {
+      //           countData[ii].count++;
+      //           flg = false;
+      //           break;
+      //         }
+      //       }
+      //       if (flg) {
+      //         countData.push({
+      //           'user': data[i].user,
+      //           'count': 1
+      //         });
+      //       }
+      //     }
+      //     res.json(countData);
+      //   }
+      // });
+      SummaryModel.find({
         'date': {
           '$gte': getToday().toUTCString(),
           '$lt': getTommorow().toUTCString()
@@ -120,32 +153,29 @@ exports.summary = function(req, res, next) {
           error.message = 'Not Found';
           next(error);
         } else {
-          var countData = [];
-          var flg = true;
-          for (var i = 0, l = data.length; i < l; i++) {
-            flg = true;
-            for (var ii = 0, ll = countData.length; ii < ll; ii++) {
-              if (data[i].user === countData[ii].user) {
-                countData[ii].count++;
-                flg = false;
-                break;
-              }
-            }
-            if (flg) {
-              countData.push({
-                'user': data[i].user,
-                'count': 1
-              });
-            }
-          }
-          res.json(countData);
+          res.json(data);
         }
       });
     } else {
       var today = getToday(searchDate);
       var tommorow = getTommorow(searchDate);
       if (today && tommorow) {
-        ChatModel.find({
+        // ChatModel.find({
+        //   'date': {
+        //     '$gte': today.toUTCString(),
+        //     '$lt': tommorow.toUTCString()
+        //   }
+        // }, function(err, data) {
+        //   if (err || !data) {
+        //     var error = new Error();
+        //     error.status = 404;
+        //     error.message = 'Not Found';
+        //     next(error);
+        //   } else {
+        //
+        //   }
+        // });
+        SummaryModel.find({
           'date': {
             '$gte': today.toUTCString(),
             '$lt': tommorow.toUTCString()
@@ -157,7 +187,7 @@ exports.summary = function(req, res, next) {
             error.message = 'Not Found';
             next(error);
           } else {
-
+            res.json(data);
           }
         });
       } else {
